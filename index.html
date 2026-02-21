@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abdul Mueez — CS PhD Researcher</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --border: rgba(255,255,255,0.07);
+    --text: #e8e6e0;
+    --muted: #7a7870;
+    --accent: #c8f564;
+    --accent2: #64b5f5;
+    --serif: 'DM Serif Display', serif;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Outfit', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  .cursor-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(200,245,100,0.4);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+  }
+  body:has(a:hover) .cursor-ring,
+  body:has(button:hover) .cursor-ring {
+    width: 52px; height: 52px;
+    border-color: var(--accent);
+  }
+
+  /* Grain overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 3rem;
+    border-bottom: 1px solid transparent;
+    transition: all 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-color: var(--border);
+  }
+  .nav-logo {
+    font-family: var(--serif);
+    font-size: 1.2rem;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a:hover::after { width: 100%; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8rem 3rem 6rem;
+    position: relative;
+    z-index: 2;
+  }
+  .hero-tag {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-name {
+    font-family: var(--serif);
+    font-size: clamp(3.5rem, 6vw, 6rem);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-name em {
+    font-style: italic;
+    color: var(--muted);
+  }
+  .hero-bio {
+    max-width: 440px;
+    line-height: 1.75;
+    color: var(--muted);
+    font-size: 0.95rem;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-bio a { color: var(--accent2); text-decoration: none; border-bottom: 1px solid rgba(100,181,245,0.3); transition: border-color 0.2s; }
+  .hero-bio a:hover { border-color: var(--accent2); }
+
+  .hero-links {
+    display: flex; gap: 1.5rem; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: translateX(-101%);
+    transition: transform 0.3s ease;
+    z-index: -1;
+  }
+  .btn:hover { color: var(--bg); border-color: var(--accent); }
+  .btn:hover::before { transform: translateX(0); }
+  .btn-primary { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .btn-primary::before { background: #a8d844; }
+  .btn-primary:hover { color: var(--bg); border-color: #a8d844; }
+
+  .hero-right {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .hero-image-wrap {
+    position: relative;
+    width: 380px; height: 480px;
+    opacity: 0;
+    animation: fadeIn 1.2s 0.5s forwards;
+  }
+  .hero-image-wrap::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(135deg, var(--accent) 0%, transparent 50%, var(--accent2) 100%);
+    z-index: 0;
+  }
+  .hero-image-wrap img {
+    position: relative;
+    z-index: 1;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: top;
+    filter: grayscale(20%);
+  }
+  .hero-quote {
+    position: absolute;
+    bottom: 3rem; right: -1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    max-width: 280px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--muted);
+    z-index: 3;
+    opacity: 0;
+    animation: fadeIn 1s 1.2s forwards;
+  }
+  .hero-quote::before {
+    content: '"';
+    font-size: 3rem;
+    line-height: 0;
+    position: absolute;
+    top: 1.5rem; left: 1rem;
+    color: var(--accent);
+    font-family: var(--serif);
+  }
+  .hero-quote span { padding-left: 1.5rem; }
+
+  /* Floating number */
+  .hero-number {
+    position: absolute;
+    top: 6rem; left: 3rem;
+    font-family: var(--serif);
+    font-size: 14rem;
+    color: rgba(255,255,255,0.02);
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  /* Vertical text */
+  .hero-vertical {
+    position: absolute;
+    right: 1.5rem; top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.5;
+  }
+
+  /* SECTIONS */
+  section { padding: 8rem 3rem; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+    max-width: 80px;
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    line-height: 1;
+    margin-bottom: 4rem;
+  }
+  .section-title em { color: var(--muted); font-style: italic; }
+
+  /* RESEARCH */
+  #research { background: var(--surface); }
+  .research-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .research-card {
+    background: var(--surface);
+    padding: 2.5rem;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .research-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 0;
+    background: var(--accent);
+    transition: height 0.4s ease;
+  }
+  .research-card:hover { background: #151520; }
+  .research-card:hover::before { height: 100%; }
+  .research-card-tag {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+  .research-card h3 {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+  .research-card p { font-size: 0.875rem; line-height: 1.7; color: var(--muted); }
+  .research-icon {
+    position: absolute;
+    top: 2rem; right: 2rem;
+    font-size: 2rem;
+    opacity: 0.15;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .research-card:hover .research-icon { opacity: 0.3; transform: scale(1.1) rotate(-5deg); }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--border);
+  }
+  .timeline-item {
+    position: relative;
+    margin-bottom: 3rem;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: all 0.5s ease;
+  }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -2.4rem; top: 0.35rem;
+    width: 8px; height: 8px;
+    border: 1px solid var(--accent);
+    background: var(--bg);
+    border-radius: 50%;
+  }
+  .timeline-date {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .timeline-title { font-size: 1.05rem; font-weight: 500; margin-bottom: 0.25rem; }
+  .timeline-sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.75rem; }
+  .timeline-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+
+  /* SKILLS */
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem;
+  }
+  .skill-pill {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.875rem 1.25rem;
+    border: 1px solid var(--border);
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    transition: all 0.25s;
+    cursor: default;
+  }
+  .skill-pill:hover {
+    border-color: var(--accent);
+    color: var(--text);
+    background: rgba(200,245,100,0.04);
+  }
+  .skill-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+  /* TWO COL */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; }
+  @media (max-width: 768px) { .two-col { grid-template-columns: 1fr; gap: 3rem; } }
+
+  /* CONTACT STRIP */
+  .contact-strip {
+    background: var(--accent);
+    color: var(--bg);
+    padding: 6rem 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+  .contact-strip h2 {
+    font-family: var(--serif);
+    font-size: clamp(2rem, 4vw, 4rem);
+    line-height: 1;
+  }
+  .contact-strip h2 em { font-style: italic; }
+  .btn-dark {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    background: var(--bg);
+    color: var(--accent);
+    border: 1px solid var(--bg);
+    transition: all 0.25s;
+  }
+  .btn-dark:hover { background: transparent; color: var(--bg); border-color: var(--bg); }
+
+  /* FOOTER */
+  footer {
+    padding: 2rem 3rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  footer span {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  footer a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
+  footer a:hover { color: var(--text); }
+
+  /* Divider line */
+  .divider { width: 100%; height: 1px; background: var(--border); }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Scroll reveal */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Parallax blob */
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+  }
+
+  /* MOBILE */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { gap: 1.5rem; }
+    section { padding: 5rem 1.5rem; }
+    .hero-left { padding: 7rem 1.5rem 4rem; }
+    .contact-strip { padding: 4rem 1.5rem; }
+    footer { padding: 1.5rem; }
+  }
+
+  @media (max-width: 600px) {
+    .nav-links { display: none; }
+  }
+
+  /* Number counter */
+  .stats-row {
+    display: flex; gap: 3rem; flex-wrap: wrap;
+    margin-bottom: 4rem;
+    padding-bottom: 4rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .stat { }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: 3rem;
+    line-height: 1;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-label {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 0.25rem;
+  }
+
+  /* Hover text swap */
+  a[data-hover] { position: relative; display: inline-block; overflow: hidden; }
+  a[data-hover] span { display: block; transition: transform 0.3s; }
+  a[data-hover]::after { content: attr(data-hover); position: absolute; inset: 0; transform: translateY(100%); transition: transform 0.3s; display: flex; align-items: center; }
+  a[data-hover]:hover span { transform: translateY(-100%); }
+  a[data-hover]:hover::after { transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor cursor-ring" id="cursorRing"></div>
+<div class="cursor cursor-dot" id="cursorDot"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">A·M</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#research">Research</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="about">
+  <div class="blob" style="width:600px;height:600px;background:rgba(200,245,100,0.05);top:-200px;left:-200px;"></div>
+  <div class="blob" style="width:400px;height:400px;background:rgba(100,181,245,0.04);bottom:0;left:300px;"></div>
+
+  <div class="hero-number">01</div>
+
+  <div class="hero-left">
+    <p class="hero-tag">CS PhD Candidate @ UCF</p>
+    <h1 class="hero-name">Abdul<br><em>Mueez</em></h1>
+    <p class="hero-bio">
+      I'm a CS PhD student at the <a href="https://www.ucf.edu/" target="_blank">University of Central Florida</a>, 
+      researching computer vision and multimodal learning — building models that see, understand, and reason about the real world. 
+      Previously taught at <a href="https://ucbbd.org/" target="_blank">Monash Pathways, UCB</a> and <a href="https://seu.edu.bd/" target="_blank">Southeast University</a>.
+    </p>
+    <div class="hero-links">
+      <a href="https://drive.google.com/file/d/14vjoolL6S2fx5zAgJW9VL7bhZK9QRKEE/view?usp=sharing" target="_blank" class="btn btn-primary">Resume ↗</a>
+      <a href="https://scholar.google.com/citations?user=MsNFtS4AAAAJ&hl=en" target="_blank" class="btn">Scholar ↗</a>
+      <a href="https://www.youtube.com/@mueez.mp4" target="_blank" class="btn">YouTube ↗</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-image-wrap">
+      <img src="https://lh3.googleusercontent.com/sitesv/APaQ0SRjY55gCrEe11bJ1k7vHAv-ZA1PybbsEes0m3-HsWz-OWO2X9pVwj3OIMxxdpJC_lZhs6eDFYm341vT0KjRly5wASlmLdKhCT1bI8VnXennttB-t-zV4WA5cGWbdbJ599me4ykIOip8mRh2XuH23n2H7bRBXnI260jwMXz4vjF4kX_sy_djoCr4hczbhQ7HS3xaiftpfwgHw2GMFgyIUD4Wh6Ft_0irBFpE=w1280" alt="Abdul Mueez">
+    </div>
+    <div class="hero-quote">
+      <span>By the very act of observing, the observer affects the observed reality.</span>
+    </div>
+  </div>
+
+  <div class="hero-vertical">Computer Vision · Multimodal Learning</div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="blob" style="width:500px;height:500px;background:rgba(200,245,100,0.04);top:0;right:0;"></div>
+  <p class="section-label reveal">02 / Research Focus</p>
+  <h2 class="section-title reveal">Where I <em>spend</em><br>my mind</h2>
+
+  <div class="stats-row reveal">
+    <div class="stat">
+      <span class="stat-num">CV</span>
+      <span class="stat-label">Computer Vision</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">MM</span>
+      <span class="stat-label">Multimodal Learning</span>
+    </div>
+    <div class="stat">
+      <span class="stat-num">RL</span>
+      <span class="stat-label">Real-World Applications</span>
+    </div>
+  </div>
+
+  <div class="research-grid">
+    <div class="research-card reveal">
+      <div class="research-icon">👁</div>
+      <div class="research-card-tag">Primary Focus</div>
+      <h3>Computer Vision</h3>
+      <p>Developing models that interpret visual data with high accuracy and contextual understanding, pushing boundaries of what machines can perceive from images and video streams.</p>
+    </div>
+    <div class="research-card reveal">
+      <div class="research-icon">🔗</div>
+      <div class="research-card-tag">Interdisciplinary</div>
+      <h3>Multimodal Learning</h3>
+      <p>Building systems that bridge visual and linguistic modalities — enabling richer understanding through the fusion of image, text, and other sensory data in unified model architectures.</p>
+    </div>
+    <div class="research-card reveal">
+      <div class="research-icon">🌍</div>
+      <div class="research-card-tag">Applied Research</div>
+      <h3>Real-World Deployment</h3>
+      <p>Emphasis on models that don't just perform well on benchmarks but translate into tangible, robust applications across healthcare, robotics, and intelligent systems.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" style="background: var(--bg);">
+  <p class="section-label reveal">03 / Projects</p>
+  <h2 class="section-title reveal">Things I've <em>built</em></h2>
+
+  <div class="skills-grid reveal">
+    <div class="skill-pill"><span class="skill-dot"></span> Vision Transformer Research</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Image-Text Alignment</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Object Detection Systems</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Semantic Segmentation</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Neural Architecture Search</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Data-Efficient Learning</div>
+    <div class="skill-pill"><span class="skill-dot"></span> PyTorch · TensorFlow</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Distributed Training</div>
+    <div class="skill-pill"><span class="skill-dot"></span> HuggingFace Ecosystem</div>
+    <div class="skill-pill"><span class="skill-dot"></span> CUDA Optimization</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Python · C++</div>
+    <div class="skill-pill"><span class="skill-dot"></span> Research Engineering</div>
+  </div>
+
+  <div style="margin-top: 3rem;" class="reveal">
+    <a href="https://scholar.google.com/citations?user=MsNFtS4AAAAJ&hl=en" target="_blank" class="btn">View Publications on Google Scholar ↗</a>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" style="background: var(--surface);">
+  <div class="two-col">
+    <div>
+      <p class="section-label reveal">04 / Employment</p>
+      <h2 class="section-title reveal">Where I've <em>worked</em></h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">2023 — Present</div>
+          <div class="timeline-title">CS PhD Researcher</div>
+          <div class="timeline-sub">University of Central Florida, Orlando FL</div>
+          <div class="timeline-desc">Graduate researcher specializing in computer vision and multimodal learning. Teaching and research assistantship responsibilities.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2022 — 2023</div>
+          <div class="timeline-title">Lecturer</div>
+          <div class="timeline-sub">Monash Pathways at Universal College Bangladesh</div>
+          <div class="timeline-desc">Taught first-year equivalent courses offered by Monash University. Covered core computer science and engineering subjects.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2021 — 2022</div>
+          <div class="timeline-title">Lecturer</div>
+          <div class="timeline-sub">Southeast University, Dhaka</div>
+          <div class="timeline-desc">Delivered undergraduate-level CS courses and supervised student projects in software engineering and algorithms.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2020 — 2021</div>
+          <div class="timeline-title">Software Engineer</div>
+          <div class="timeline-sub">Industry (Bangladesh)</div>
+          <div class="timeline-desc">Brief industry stint building software systems before transitioning into academia and research.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EDUCATION -->
+    <div id="education">
+      <p class="section-label reveal">05 / Education</p>
+      <h2 class="section-title reveal">What I've <em>studied</em></h2>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">2023 — Present</div>
+          <div class="timeline-title">Ph.D. in Computer Science</div>
+          <div class="timeline-sub">University of Central Florida</div>
+          <div class="timeline-desc">Research focus: computer vision, multimodal learning, and deep learning applications. Advisor TBD. Expected graduation 2027–28.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2016 — 2020</div>
+          <div class="timeline-title">B.Sc. in Computer Science & Engineering</div>
+          <div class="timeline-sub">BRAC University, Dhaka, Bangladesh</div>
+          <div class="timeline-desc">Graduated with focus on machine learning and software systems. Capstone research on intelligent systems design.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEACHING (fused into experience above, add standalone) -->
+<section style="background: var(--bg);">
+  <p class="section-label reveal">06 / Teaching</p>
+  <h2 class="section-title reveal">What I've <em>taught</em></h2>
+
+  <div class="research-grid">
+    <div class="research-card reveal">
+      <div class="research-card-tag">Monash Pathways · UCB</div>
+      <h3>Foundation Computing</h3>
+      <p>First-year equivalent Monash University courses on programming fundamentals, data structures, and computational thinking.</p>
+    </div>
+    <div class="research-card reveal">
+      <div class="research-card-tag">Southeast University</div>
+      <h3>CS Core Curriculum</h3>
+      <p>Undergraduate lectures on algorithms, software engineering principles, and object-oriented design. Supervised student capstone projects.</p>
+    </div>
+    <div class="research-card reveal">
+      <div class="research-card-tag">UCF · Graduate TA</div>
+      <h3>CS Graduate Courses</h3>
+      <p>Teaching assistant responsibilities for graduate-level CS coursework at UCF, supporting students in advanced computer science topics.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<div class="contact-strip" id="contact">
+  <div>
+    <h2>Let's <em>connect</em>.</h2>
+    <p style="margin-top: 0.75rem; font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.08em; opacity: 0.7;">
+      emailmueez@gmail.com · ab005222@ucf.edu
+    </p>
+  </div>
+  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+    <a href="mailto:emailmueez@gmail.com" class="btn-dark">Send Email ↗</a>
+    <a href="https://scholar.google.com/citations?user=MsNFtS4AAAAJ&hl=en" target="_blank" class="btn-dark">Scholar ↗</a>
+    <a href="https://www.instagram.com/mueez.spam/" target="_blank" class="btn-dark">Instagram ↗</a>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span>© 2025 Abdul Mueez · UCF CS PhD</span>
+  <span>Computer Vision · Multimodal Learning</span>
+  <span>
+    <a href="https://www.youtube.com/@mueez.mp4" target="_blank">YouTube</a> ·
+    <a href="https://scholar.google.com/citations?user=MsNFtS4AAAAJ&hl=en" target="_blank">Scholar</a> ·
+    <a href="https://www.instagram.com/mueez.spam/" target="_blank">Instagram</a>
+  </span>
+</footer>
+
+<script>
+  // Custom cursor
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top = my + 'px';
+  });
+
+  function animRing() {
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Intersection observer for reveals
+  const reveals = document.querySelectorAll('.reveal, .timeline-item');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => io.observe(el));
+
+  // Parallax blobs on mouse
+  document.addEventListener('mousemove', e => {
+    const blobs = document.querySelectorAll('.blob');
+    blobs.forEach((b, i) => {
+      const factor = (i % 2 === 0 ? 0.015 : -0.01);
+      const x = (e.clientX - window.innerWidth / 2) * factor;
+      const y = (e.clientY - window.innerHeight / 2) * factor;
+      b.style.transform = `translate(${x}px, ${y}px)`;
+    });
+  });
+
+  // Stagger research cards
+  document.querySelectorAll('.research-card').forEach((card, i) => {
+    card.style.transitionDelay = `${i * 0.08}s`;
+  });
+</script>
+</body>
+</html>
