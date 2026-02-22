@@ -371,7 +371,6 @@ const SITE_DATA = {
     links: [
       { label: "Resume ↗",  href: "https://drive.google.com/file/d/14vjoolL6S2fx5zAgJW9VL7bhZK9QRKEE/view?usp=sharing", primary: true },
       { label: "Scholar ↗", href: "https://scholar.google.com/citations?user=MsNFtS4AAAAJ&hl=en" },
-      { label: "Instagram ↗", href: "https://www.instagram.com/mueez.spam/" },
     ],
   },
 
@@ -461,7 +460,7 @@ const SITE_DATA = {
     {
       date:  "Jun 2019 — Feb 2022",
       title: "Lecturer (CSE Department)",
-      org:   "Southeast University, Dhaka",
+      org:   "Southeast University",
       bullets: [
         "Courses: Programming Language II (Java), Computer Architecture, Database Design, Digital Logic Design, Computer Fundamentals",
         "Built a <a href=\"https://sites.google.com/view/abdulmueez/classx\" target=\"_blank\" rel=\"noopener noreferrer\">digital course hub</a> to facilitate learning during the pandemic",
@@ -503,8 +502,8 @@ const SITE_DATA = {
     {
       date:  "Aug 2022 — Present",
       title: "PhD in Computer Science",
-      org:   "University of Central Florida · Orlando, FL",
-      desc:  "Research: Vision-Language Models, Photovoltaic Cells, Grain Boundaries. Advisor: Dr. Shruti Vyas.",
+      org:   "University of Central Florida",
+      desc:  `Advisor: <a href="https://vyas-lab.github.io/" target="_blank" rel="noopener noreferrer">Dr. Shruti Vyas</a>.`,
     },
     {
       date:  "Dec 2025",
@@ -514,7 +513,7 @@ const SITE_DATA = {
     {
       date:  "Dec 2018",
       title: "BS in Computer Science & Engineering",
-      org:   "BRAC University, Dhaka · CGPA: 3.88 / 4.0",
+      org:   "BRAC University · CGPA: 3.88 / 4.0",
       desc:  `Thesis: <a href="https://scholar.google.com/citations?view_op=view_citation&hl=en&user=MsNFtS4AAAAJ&citation_for_view=MsNFtS4AAAAJ:u5HHmVD_uO8C" target="_blank" rel="noopener noreferrer">Exploratory Data Analysis and Success Prediction of Google Play Store Apps</a>.`,
     },
   ],
@@ -526,12 +525,12 @@ const SITE_DATA = {
       skills: ["Vision-Language Models (VLM)", "Parameter-Efficient Fine-Tuning (LoRA / QLoRA)", "Instruction-Tuning", "Multimodal Prompt Engineering"],
     },
     {
-      label: "Computer Vision",
+      label: "Computer Vision Recognition",
       skills: ["Classification", "Object Detection", "Segmentation", "OCR"],
     },
     {
       label: "Training & Infrastructure",
-      skills: ["PyTorch / CUDA", "Mixed-Precision Training", "Distributed Training (DDP / FSDP)", "HuggingFace Transformers & Accelerate"],
+      skills: ["PyTorch / CUDA", "Mixed-Precision Training", "Distributed Training (DDP)", "HuggingFace Transformers & Accelerate"],
     },
     {
       label: "Data",
@@ -541,18 +540,15 @@ const SITE_DATA = {
 
   contact: {
     headingItalic: "connect.",
-    emails:   ["emailmueez@gmail.com", "ab005222@ucf.edu"],
+    emails:   ["emailmueez@gmail.com", "abdul.mueez@ucf.edu"],
     buttons: [
-      { label: "Send Email ↗", href: "mailto:emailmueez@gmail.com" },
-      { label: "Scholar ↗",   href: "https://scholar.google.com/citations?user=MsNFtS4AAAAJ&hl=en" },
-      { label: "Resume ↗",    href: "https://drive.google.com/file/d/14vjoolL6S2fx5zAgJW9VL7bhZK9QRKEE/view?usp=sharing" },
+      { label: "YouTube ↗",   href: "https://www.youtube.com/@mueez.mp4/courses" },
+      { label: "Instagram ↗",    href: "https://www.instagram.com/mueez.spam/" },
     ],
   },
 
   footerLinks: [
-    { label: "YouTube",    href: "https://www.youtube.com/@mueez.mp4" },
-    { label: "Scholar",    href: "https://scholar.google.com/citations?user=MsNFtS4AAAAJ&hl=en" },
-    { label: "Instagram",  href: "https://www.instagram.com/mueez.spam/" },
+    { label: "GitHub",    href: "https://github.com/mueez-overflow" },
   ],
 };
 
@@ -698,7 +694,7 @@ function buildContact(c) {
 function buildFooter(data) {
   const footer = document.createElement('footer');
   footer.innerHTML = `
-    <span>© ${new Date().getFullYear()} ${data.profile.firstName} ${data.profile.lastName} · UCF CS PhD</span>
+    <span>© ${new Date().getFullYear()} ${data.profile.firstName} ${data.profile.lastName}</span>
     <span>${data.footerLinks.map(l => `<a href="${l.href}" target="_blank">${l.label}</a>`).join(' · ')}</span>
   `;
   return footer;
